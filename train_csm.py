@@ -9,7 +9,7 @@ from transformers import (
 # model_id = 'sesame/csm-1b'
 model_id = '/nfs/pretrained_models/csm-1b'
 # dataset_path = 'eustlb/dailytalk-conversations-grouped'
-dataset_path = '/nfs/pretrained_models/dailytalk-conversations-grouped'
+dataset_path = '/nfs/datasets/dailytalk-conversations-grouped'
 
 processor = CsmProcessor.from_pretrained(model_id)
 model = CsmForConditionalGeneration.from_pretrained(model_id)
