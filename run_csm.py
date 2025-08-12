@@ -8,14 +8,26 @@ from dataclasses import dataclass
 # Disable Triton compilation
 os.environ["NO_TORCH_COMPILE"] = "1"
 
+# model_id = 'sesame/csm-1b'
+model_id = '/nfs/pretrained_models/csm-1b'
+
 # Default prompts are available at https://hf.co/sesame/csm-1b
-prompt_filepath_conversational_a = hf_hub_download(
-    repo_id="sesame/csm-1b",
-    filename="prompts/conversational_a.wav"
+# prompt_filepath_conversational_a = hf_hub_download(
+#     repo_id=model_id,
+#     filename="prompts/conversational_a.wav"
+# )
+# prompt_filepath_conversational_b = hf_hub_download(
+#     repo_id=model_id,
+#     filename="prompts/conversational_b.wav"
+# )
+
+prompt_filepath_conversational_a = os.path.join(
+    model_id,
+    "prompts/conversational_a.wav"
 )
-prompt_filepath_conversational_b = hf_hub_download(
-    repo_id="sesame/csm-1b",
-    filename="prompts/conversational_b.wav"
+prompt_filepath_conversational_b = os.path.join(
+    model_id,
+    "prompts/conversational_b.wav"
 )
 
 SPEAKER_PROMPTS = {
@@ -65,7 +77,7 @@ def main():
     print(f"Using device: {device}")
 
     # Load model
-    generator = load_csm_1b(device)
+    generator = load_csm_1b(model_id, device)
 
     # Prepare prompts
     prompt_a = prepare_prompt(
@@ -107,7 +119,7 @@ def main():
     # Concatenate all generations
     all_audio = torch.cat([seg.audio for seg in generated_segments], dim=0)
     torchaudio.save(
-        "full_conversation.wav",
+        "outputs/full_conversation.wav",
         all_audio.unsqueeze(0).cpu(),
         generator.sample_rate
     )

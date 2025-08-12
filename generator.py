@@ -19,11 +19,14 @@ class Segment:
     audio: torch.Tensor
 
 
-def load_llama3_tokenizer():
+def load_llama3_tokenizer(
+    
+    ):
     """
     https://github.com/huggingface/transformers/issues/22794#issuecomment-2092623992
     """
-    tokenizer_name = "meta-llama/Llama-3.2-1B"
+    # tokenizer_name="meta-llama/Llama-3.2-1B"
+    tokenizer_name="/nfs/pretrained_models/Llama-3.2-1B"
     tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
     bos = tokenizer.bos_token
     eos = tokenizer.eos_token
@@ -47,7 +50,12 @@ class Generator:
         self._text_tokenizer = load_llama3_tokenizer()
 
         device = next(model.parameters()).device
-        mimi_weight = hf_hub_download(loaders.DEFAULT_REPO, loaders.MIMI_NAME)
+        
+        # mini_path = loaders.DEFAULT_REPO
+        # mimi_weight = hf_hub_download(mini_path, loaders.MIMI_NAME)
+        
+        import os
+        mimi_weight = os.path.join('/nfs/pretrained_models/moshiko-pytorch-bf16', loaders.MIMI_NAME)
         mimi = loaders.get_mimi(mimi_weight, device=device)
         mimi.set_num_codebooks(32)
         self._audio_tokenizer = mimi
@@ -168,8 +176,8 @@ class Generator:
         return audio
 
 
-def load_csm_1b(device: str = "cuda") -> Generator:
-    model = Model.from_pretrained("sesame/csm-1b")
+def load_csm_1b(model_id='sesame/csm-1b', device: str = "cuda") -> Generator:
+    model = Model.from_pretrained(model_id)
     model.to(device=device, dtype=torch.bfloat16)
 
     generator = Generator(model)
